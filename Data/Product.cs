@@ -11,7 +11,7 @@ namespace WebApi_Menu_Practica.Data
     public class Product
     {
         static string connectionString = ConfigurationManager.ConnectionStrings["MenuConnection"].ConnectionString;
-        static string queryString = "SELECT *  FROM dbo.Products;";
+        static string queryString = "SELECT *  FROM dbo.Users;";
 
         internal static ProductModel List()
         {

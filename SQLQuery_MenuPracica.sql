@@ -27,7 +27,7 @@ BEGIN TRAN
 
 CREATE TABLE [dbo].[Users] (
 	Id_User [int] IDENTITY (1, 1) NOT NULL ,
-	Business_Name tinyint  NOT NULL ,
+	Business_Name [nvarchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL ,
 	Slogan [nvarchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL ,
 	user_email [nvarchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[Password] [nvarchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
