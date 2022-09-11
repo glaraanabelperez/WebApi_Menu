@@ -10,13 +10,13 @@ using WebApi_Menu_Practica.Models;
 
 namespace WebApi_Menu_Practica.Data
 {
-    public class Product
+    public class Category
     {
         static string connectionString = ConfigurationManager.ConnectionStrings["MenuConnection"].ConnectionString;
 
         internal static ProductModel List()
         {
-            string queryString = "SELECT *  FROM dbo.Products;";
+            string queryString = "SELECT *  FROM dbo.Users;";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -243,16 +243,16 @@ namespace WebApi_Menu_Practica.Data
                 else
                     objCmd = new SqlCommand("Product_Add", connection);
                 objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = data.UserId;
-                objCmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = data.CategoryId;
-                objCmd.Parameters.Add("@Title", SqlDbType.NVarChar, 250).Value = data.Title;
-                objCmd.Parameters.Add("@SubTitle", SqlDbType.NVarChar, 250).Value = data.Subtitle;
-                objCmd.Parameters.Add("@Description", SqlDbType.NVarChar, 250).Value = data.Description;
-                objCmd.Parameters.Add("@Featured", SqlDbType.TinyInt).Value = data.Featured;
-                objCmd.Parameters.Add("@NameImage", SqlDbType.NVarChar, 250).Value = data.NameImage;
-                objCmd.Parameters.Add("@Price", SqlDbType.Money).Value = data.Price;
-                objCmd.Parameters.Add("@Promotion", SqlDbType.NVarChar, 250).Value = data.Promotion;
-                objCmd.Parameters.Add("@State", SqlDbType.TinyInt).Value = data.State;
+                objCmd.Parameters.Add("@UserId", SqlDbType.Date).Value = data.UserId;
+                objCmd.Parameters.Add("@CategoryId", SqlDbType.Date).Value = data.CategoryId;
+                objCmd.Parameters.Add("@Title", SqlDbType.Money).Value = data.Title;
+                objCmd.Parameters.Add("@@SubTitle", SqlDbType.Money).Value = data.Subtitle;
+                objCmd.Parameters.Add("@Description", SqlDbType.Char, 5).Value = data.Description;
+                objCmd.Parameters.Add("@Featured", SqlDbType.Decimal).Value = data.Featured;
+                objCmd.Parameters.Add("@NameImage", SqlDbType.Bit).Value = data.NameImage;
+                objCmd.Parameters.Add("@Price", SqlDbType.Int).Value = data.Price;
+                objCmd.Parameters.Add("@Promotion", SqlDbType.Int).Value = data.Promotion;
+                objCmd.Parameters.Add("@State", SqlDbType.Bit).Value = data.State;
                 
 
                 //if (result == Const.SQL_NO_PERMISSION)
@@ -274,7 +274,7 @@ namespace WebApi_Menu_Practica.Data
             
         }
 
-        internal static int Delete(int productId)
+        internal static int Delete(int userId, int productId)
         {
             using (var connection = new SqlConnection(connectionString))
             {
