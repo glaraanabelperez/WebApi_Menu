@@ -26,7 +26,7 @@ namespace WebApi_Menu_Practica.Models
         /// <summary>
         /// email
         /// </summary>
-        public string  User_email { get; set; }
+        public string  user_email { get; set; }
 
         /// <summary>
         /// contraseña del usuario

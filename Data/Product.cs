@@ -12,30 +12,8 @@ namespace WebApi_Menu_Practica.Data
 {
     public class Product
     {
-        static string connectionString = ConfigurationManager.ConnectionStrings["MenuConnection"].ConnectionString;
-
-        internal static ProductModel List()
-        {
-            string queryString = "SELECT *  FROM dbo.Products;";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        return new ProductModel();
-                    }
-                }
-                connection.Close();
-            }
-            return null;
-        }
-
-
-
+        internal static string connectionString = ConfigurationManager.ConnectionStrings["MenuConnection"].ConnectionString;
+      
         #region consulta
 
         /// <summary>
@@ -223,22 +201,66 @@ namespace WebApi_Menu_Practica.Data
         }
 
         /// <summary>
+        /// Devuelve los datos de  producto
+        /// </summary>
+        /// <param name="userId">Identificador del producto</param>
+        /// <returns>Datos de producto</returns>
+        internal static ProductModel Get(int productId)
+        {
+            var items = new ProductModel();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var objCmd = new SqlCommand("Product_Get", connection);
+                objCmd.CommandType = CommandType.StoredProcedure;
+                connection.Open();
+                using (var objDR = objCmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (objDR.HasRows)
+                    {
+                        while (objDR.Read())
+                        {
+                            items = new ProductModel();
+                            while (objDR.Read())
+                            {
+                                items.CategoryId = objDR.GetInt32(0);
+                                items.Description = objDR.GetString(1);
+                                items.Featured = objDR.GetBoolean(2);
+                                items.NameImage = objDR.GetString(3);
+                                items.Price = (double)objDR.GetDecimal(4);
+                                items.ProductId = objDR.GetInt32(5);
+                                items.Promotion = objDR.GetString(6);
+                                items.State = objDR.GetBoolean(7);
+                                items.Subtitle = objDR.GetString(8);
+                                items.Title = objDR.GetString(9);
+                                items.UserId = objDR.GetInt32(10);
+                            }
+                            objDR.Close();
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return items;
+
+        }
+
+        /// <summary>
         /// Graba el producto
         /// </summary>
         /// <param name="data">Datos del prodcuto</param>
         /// <param name="userId">Identificador del usuario que graba</param>
         /// <returns><c>true</c> Si se guardaron los datos, en caso contrario quiere decir que el nombre está repetido</returns>
-        internal static int Save(int userId, ProductModel data)
+        public static int Save(int? productId, ProductModel data)
         {
             using (var connection = new SqlConnection(connectionString))
             {
 
                 SqlCommand objCmd;
 
-                if (data.ProductId.HasValue && data.ProductId.Value != 0)
+                if (productId.HasValue && productId.Value != 0)
                 {
                     objCmd = new SqlCommand("Product_Update", connection);
-                    objCmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = data.ProductId.Value;
+                    objCmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
                 }
                 else
                     objCmd = new SqlCommand("Product_Add", connection);
@@ -274,13 +296,18 @@ namespace WebApi_Menu_Practica.Data
             
         }
 
-        internal static int Delete(int productId)
+        /// <summary>
+        /// Elimina un producto
+        /// </summary>
+        /// <returns>Retorna 0</returns>
+        public static int Delete(int productId)
         {
             using (var connection = new SqlConnection(connectionString))
             {
 
                 SqlCommand objCmd;
                 objCmd = new SqlCommand("Product_Delete", connection);
+                objCmd.CommandType = CommandType.StoredProcedure;
                 objCmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
 
                 connection.Open();

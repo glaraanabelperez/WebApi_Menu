@@ -10,13 +10,13 @@ namespace WebApi_Menu_Practica.Models
         /// <summary>
         /// Identificador producto
         /// </summary>
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
 
 
         /// <summary>
         /// Identificador Categoria
         /// </summary>
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
 
         /// <summary>
