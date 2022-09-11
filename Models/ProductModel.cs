@@ -10,18 +10,18 @@ namespace WebApi_Menu_Practica.Models
         /// <summary>
         /// Identificador producto
         /// </summary>
-        public int? IdProduct { get; set; }
+        public int? ProductId { get; set; }
 
 
         /// <summary>
         /// Identificador Categoria
         /// </summary>
-        public int IdCategory { get; set; }
+        public int CategoryId { get; set; }
 
         /// <summary>
         /// Identificador usuario al cual pertenece
         /// </summary>
-        public int IdUser { get; set; }
+        public int UserId { get; set; }
 
         /// <summary>
         /// Estado
@@ -32,6 +32,11 @@ namespace WebApi_Menu_Practica.Models
         /// Titulo
         /// </summary>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Titulo
+        /// </summary>
+        public string Subtitle { get; set; }
 
         /// <summary>
         /// Descripcion
