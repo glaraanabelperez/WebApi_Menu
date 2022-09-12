@@ -16,6 +16,7 @@ namespace WebApi_Menu_Practica.Controllers
         /// <summary>
         /// Listado de todos los productos 
         /// </summary>
+        [Route("api/Product/{productId}")]
         [HttpGet]
         public IHttpActionResult Get(int productId)
         {
@@ -23,7 +24,7 @@ namespace WebApi_Menu_Practica.Controllers
             {
                 //List<ProductModel> orderDToList;
                 ProductModel orderDToList = Data.Product.Get(productId);
-                return ((IHttpActionResult)orderDToList);
+                return Ok(orderDToList);
             }
             catch (Exception ex)
             {
@@ -54,22 +55,24 @@ namespace WebApi_Menu_Practica.Controllers
         /// </summary>
         /// <param name="data">Datos del usuario</param>
         /// <returns><c>true</c> Si se guardaron los datos</returns>
-        [HttpPut]
-        public IHttpActionResult Put([FromBody] ProductModel data)
+        [Route("api/Product/insert")]
+        [HttpPost]
+        public IHttpActionResult Insert([FromBody] ProductModel data)
         {
             var userItem = Data.Product.Save(null, data);
-            if (userItem != 0)
+            if (userItem != -1)
             {
                 return NotFound();
             }
             return Ok();
         }
 
-        [HttpPost]
+        [Route("api/Product/{productId}")]
+        [HttpPut]
         public IHttpActionResult Update(int productId, [FromBody] ProductModel data)
         {
             var userItem = Data.Product.Save(productId, data);
-            if (userItem != 0)
+            if (userItem != -1)
             {
                 return NotFound();
             }
@@ -80,10 +83,11 @@ namespace WebApi_Menu_Practica.Controllers
         /// Elimina un producto
         /// </summary>
         /// <param name="productoId"> Identificador del producto</param>
+        [Route("api/Product/delete/{productId}")]
         [HttpDelete]
         public IHttpActionResult Delete(int productId) {
             var userItem = Data.Product.Delete(productId);
-            if (userItem != 0)
+            if (userItem != -1)
             {
                 return NotFound();
              }

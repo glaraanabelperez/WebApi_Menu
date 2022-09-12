@@ -209,6 +209,7 @@ namespace WebApi_Menu_Practica.Data
             using (var connection = new SqlConnection(connectionString))
             {
                 var objCmd = new SqlCommand("Product_Get", connection);
+                objCmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
                 objCmd.CommandType = CommandType.StoredProcedure;
                 connection.Open();
                 using (var objDR = objCmd.ExecuteReader(CommandBehavior.SingleRow))
@@ -217,17 +218,18 @@ namespace WebApi_Menu_Practica.Data
                    items = new ProductModel();
                    while (objDR.Read())
                    {
-                       items.CategoryId = objDR.GetInt32(0);
-                       items.Description = objDR.GetString(1);
-                       items.Featured = objDR.GetBoolean(2);
-                       items.NameImage = objDR.GetString(3);
-                       items.Price = (double)objDR.GetDecimal(4);
-                       items.ProductId = objDR.GetInt32(5);
-                       items.Promotion = objDR.GetString(6);
-                       items.State = objDR.GetBoolean(7);
-                       items.Subtitle = objDR.GetString(8);
-                       items.Title = objDR.GetString(9);
-                       items.UserId = objDR.GetInt32(10);
+                        items.ProductId = objDR.GetInt32(0);
+                        items.CategoryId = objDR.GetInt32(1);
+                        items.UserId = objDR.GetInt32(2);
+                        items.State = objDR.GetByte(3)== 0 ? false : true;
+                        items.Title = objDR.GetString(4);
+                        items.Subtitle = objDR.GetString(5);
+                        items.Description = objDR.GetString(6);
+                        items.NameImage = objDR.GetString(7);
+                        items.Price = (double)objDR.GetDecimal(9);
+                        items.Featured =  objDR.GetByte(3) == 0 ? false : true;
+                        items.Promotion = objDR.GetString(11);
+
                    }
                 }
             }
@@ -258,14 +260,14 @@ namespace WebApi_Menu_Practica.Data
                 objCmd.CommandType = CommandType.StoredProcedure;
                 objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = data.UserId;
                 objCmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = data.CategoryId;
-                objCmd.Parameters.Add("@Title", SqlDbType.NVarChar, 250).Value = data.Title;
-                objCmd.Parameters.Add("@SubTitle", SqlDbType.NVarChar, 250).Value = data.Subtitle;
-                objCmd.Parameters.Add("@Description", SqlDbType.NVarChar, 250).Value = data.Description;
-                objCmd.Parameters.Add("@Featured", SqlDbType.TinyInt).Value = data.Featured;
-                objCmd.Parameters.Add("@NameImage", SqlDbType.NVarChar, 250).Value = data.NameImage;
+                objCmd.Parameters.Add("@Title", SqlDbType.VarChar, 250).Value = data.Title;
+                objCmd.Parameters.Add("@SubTitle", SqlDbType.VarChar, 250).Value = data.Subtitle;
+                objCmd.Parameters.Add("@Description", SqlDbType.VarChar, 250).Value = data.Description;
+                objCmd.Parameters.Add("@Featured", SqlDbType.TinyInt).Value = (data.Featured == true ? 1 : 0);
+                objCmd.Parameters.Add("@NameImage", SqlDbType.VarChar, 250).Value = data.NameImage;
                 objCmd.Parameters.Add("@Price", SqlDbType.Money).Value = data.Price;
-                objCmd.Parameters.Add("@Promotion", SqlDbType.NVarChar, 250).Value = data.Promotion;
-                objCmd.Parameters.Add("@State", SqlDbType.TinyInt).Value = data.State;
+                objCmd.Parameters.Add("@Promotion", SqlDbType.VarChar, 250).Value = data.Promotion;
+                objCmd.Parameters.Add("@State", SqlDbType.TinyInt).Value = (data.State == true ? 1 : 0);
                 
 
                 //if (result == Const.SQL_NO_PERMISSION)
