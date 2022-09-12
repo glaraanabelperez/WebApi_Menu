@@ -156,7 +156,7 @@ namespace WebApi_Menu_Practica.Data
               objSqlCmd.CommandType = CommandType.Text;
 
               connection.Open();
-
+              
               if (from.HasValue)
                     {
                         strWithParams += string.Format(OFFSET, from, length);

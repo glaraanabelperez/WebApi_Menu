@@ -26,27 +26,35 @@ namespace WebApi_Menu_Practica.Data
             {
                 var command = new SqlCommand(queryString, connection);
                 connection.Open();
-                using (var objDR = command.ExecuteReader())
-                {
+                SqlDataReader objDR = command.ExecuteReader(CommandBehavior.CloseConnection);
+                try{
                     while (objDR.Read())
                     {
                         list.Add(new UserModel()
                         {
+                            User_id = objDR.GetInt32(0),
                             Business_Name = objDR.GetString(1),
-                            Direction = objDR.GetString(2),
-                            Ig = objDR.GetString(3),
-                            Logo = objDR.GetString(4),
-                            OrdersWhatsapp = objDR.GetBoolean(5),
-                            Password = objDR.GetString(6),
-                            Phone = objDR.GetInt32(7),
-                            Slogan = objDR.GetString(8),
-                            user_email = objDR.GetString(9),
-                            User_id = objDR.GetInt32(10)
+                            Slogan = objDR.GetString(2),
+                            user_email = objDR.GetString(3),
+                            Password = objDR.GetString(4),
+                            Phone = objDR.GetInt32(5),
+                            Direction = objDR.GetString(6),
+                            Ig = objDR.GetString(7),
+                            Facebook = objDR.GetString(8),
+                            Logo = objDR.GetString(9),
+                            OrdersWhatsapp = (objDR.GetByte(10) == 0 ? false : true),
                         });
-                    }                                                                         
+                    }
+
+                    return list.ToArray();
                 }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                                                                                      
             }
-            return list.ToArray();
+            
         }
 
         /// <summary>

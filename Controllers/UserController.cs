@@ -20,13 +20,20 @@ namespace WebApi_Menu_Practica.Controllers
         [HttpGet]
         public IHttpActionResult GetAll()
         {
- 
-           var orderDToList = user.List();
-           if (orderDToList == null)
-           {
-               return NotFound();
-           }
-           return Ok(orderDToList);
+            try
+            {
+                var orderDToList = user.List();
+                if (orderDToList == null)
+                {
+                    return NotFound();
+                }
+                return Ok(orderDToList);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No hubo respuesta en el servidor");
+            }
+           
 
         }
 
