@@ -18,13 +18,13 @@ namespace WebApi_Menu_Practica.Controllers
         /// Listado de todos los productos 
         /// </summary>
         [HttpGet]
-        public IHttpActionResult GetAll()
+        public IHttpActionResult GetAll(int userId)
         {
             try
             {
                 //List<ProductModel> orderDToList;
-                var list = Data.Category.List();
-                return ((IHttpActionResult)list);
+                var list = Data.Category.List(userId);
+                return Ok(list);
             }
             catch (Exception ex)
             {

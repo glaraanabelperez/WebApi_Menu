@@ -73,12 +73,12 @@ namespace WebApi_Menu_Practica.Data
         #region Sql
 
         private const string SELECT_ALL =
-        ";SELECT A.Id_Product, A.CreatedOn,A.[Title], A.[Description], A.Featured as Featured, A.Id_Categorie_FK as Id_Category, A.Id_User_FK as Id_User , " +
-            " A.Name_Image, A.Price as Price ,A.Promotion" +
+        ";SELECT A.ProductId, A.CreatedOn,A.[Title], A.[Description], A.Featured as Featured, A.CategoryId_FK as CategoryId, A.UserId_FK as UserId , " +
+            " A.NameImage, A.Price as Price ,A.Promotion" +
             ", U.Business_Name as Buisness, o.[Description] as CategoryName " +
             " FROM Products AS A "+
-            " INNER JOIN dbo.[Users] U ON U.Id_User = A.Id_User_FK " +
-            " INNER JOIN dbo.Categories O ON O.Id_Category = A.Id_Categorie_FK " +
+            " INNER JOIN dbo.[Users] U ON U.UserId = A.UserId_FK " +
+            " INNER JOIN dbo.Categories O ON O.CategoryId = A.CategoryId_FK " +
             " {2} " +
             " ORDER BY {0} {1} ";
 
@@ -112,24 +112,23 @@ namespace WebApi_Menu_Practica.Data
             else
                 strOrderField = OrderFields.Featured.ToString();
 
-
             using (var connection = new SqlConnection(connectionString))
             {
-                using(SqlCommand objSqlCmd = new SqlCommand("", connection))
-                {
-                    //Agregando parametros
-                    string strFilter = string.Empty;
-                    if (filter != null)
+                SqlCommand objSqlCmd = new SqlCommand("", connection);
+              
+              //Agregando parametros
+              string strFilter = string.Empty;
+              if (filter != null)
                     {
                         if (filter.CategoryId.HasValue)
                         {
-                            strFilter += " AND [A].Id_Categorie_FK=@Id_Category";
+                            strFilter += " AND [A].CategoryId_FK=@Id_Category";
                             objSqlCmd.Parameters.Add("@Id_Categorie", SqlDbType.Int).Value = filter.CategoryId.Value;
 
                         }
                         if (filter.UserId.HasValue)
                         {
-                            strFilter += " AND [A].Id_User_FK=@Id_User";
+                            strFilter += " AND [A].UserId_FK=@Id_User";
                             objSqlCmd.Parameters.Add("@Id_User", SqlDbType.Int).Value = filter.UserId.Value;
                         }
                         if (filter.State.HasValue)
@@ -153,12 +152,12 @@ namespace WebApi_Menu_Practica.Data
                             strFilter = " WHERE " + strFilter.Substring(5);
                     }
 
-                    string strWithParams = string.Format(SELECT_ALL, strOrderField, !orderAscendant.HasValue || orderAscendant.Value ? "ASC" : "DESC", strFilter);
-                    objSqlCmd.CommandType = CommandType.Text;
+              string strWithParams = string.Format(SELECT_ALL, strOrderField, !orderAscendant.HasValue || orderAscendant.Value ? "ASC" : "DESC", strFilter);
+              objSqlCmd.CommandType = CommandType.Text;
 
-                    connection.Open();
+              connection.Open();
 
-                    if (from.HasValue)
+              if (from.HasValue)
                     {
                         strWithParams += string.Format(OFFSET, from, length);
 
@@ -176,7 +175,7 @@ namespace WebApi_Menu_Practica.Data
                         recordCount = (int)dataset.Tables[0].Rows[0][0];
                         return dataset.Tables[1];
                     }
-                    else
+              else
                     {
                         objSqlCmd.CommandText = strWithParams;
                         recordCount = -1;
@@ -189,13 +188,12 @@ namespace WebApi_Menu_Practica.Data
 
                         DataSet dataset = new DataSet();
                         adapter.Fill(dataset);
-                        connection.Close();
 
                         return dataset.Tables[0];
                     }
 
 
-                }
+                
             }
              
         }
@@ -215,30 +213,23 @@ namespace WebApi_Menu_Practica.Data
                 connection.Open();
                 using (var objDR = objCmd.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    if (objDR.HasRows)
-                    {
-                        while (objDR.Read())
-                        {
-                            items = new ProductModel();
-                            while (objDR.Read())
-                            {
-                                items.CategoryId = objDR.GetInt32(0);
-                                items.Description = objDR.GetString(1);
-                                items.Featured = objDR.GetBoolean(2);
-                                items.NameImage = objDR.GetString(3);
-                                items.Price = (double)objDR.GetDecimal(4);
-                                items.ProductId = objDR.GetInt32(5);
-                                items.Promotion = objDR.GetString(6);
-                                items.State = objDR.GetBoolean(7);
-                                items.Subtitle = objDR.GetString(8);
-                                items.Title = objDR.GetString(9);
-                                items.UserId = objDR.GetInt32(10);
-                            }
-                            objDR.Close();
-                        }
-                    }
+
+                   items = new ProductModel();
+                   while (objDR.Read())
+                   {
+                       items.CategoryId = objDR.GetInt32(0);
+                       items.Description = objDR.GetString(1);
+                       items.Featured = objDR.GetBoolean(2);
+                       items.NameImage = objDR.GetString(3);
+                       items.Price = (double)objDR.GetDecimal(4);
+                       items.ProductId = objDR.GetInt32(5);
+                       items.Promotion = objDR.GetString(6);
+                       items.State = objDR.GetBoolean(7);
+                       items.Subtitle = objDR.GetString(8);
+                       items.Title = objDR.GetString(9);
+                       items.UserId = objDR.GetInt32(10);
+                   }
                 }
-                connection.Close();
             }
             return items;
 
@@ -281,7 +272,6 @@ namespace WebApi_Menu_Practica.Data
                 //    throw new SecurityException();
                 connection.Open();
                 var result=objCmd.ExecuteNonQuery();
-                connection.Close();
 
                 return result;
                 //if (result < 0)
@@ -312,13 +302,10 @@ namespace WebApi_Menu_Practica.Data
 
                 connection.Open();
                 var result = objCmd.ExecuteNonQuery();
-                connection.Close();
 
                 return result;
 
             }
-
-
 
         }
 

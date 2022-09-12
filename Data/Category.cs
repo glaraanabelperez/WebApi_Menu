@@ -29,24 +29,16 @@ namespace WebApi_Menu_Practica.Data
                 //connection.Open();
                 using (var objDR = objCmd.ExecuteReader())
                 {
-                    if (objDR.HasRows)
-                    {
-                        while (objDR.Read())
-                        {
-                            var c = new CategoryModel();
-                            while (objDR.Read())
-                            {
-                                c.CategoryId = objDR.GetInt32(0);
-                                c.Description = objDR.GetString(1);
-                                c.UserId = objDR.GetInt32(2);
+                  var c = new CategoryModel();
+                  while (objDR.Read())
+                  {
+                      c.CategoryId = objDR.GetInt32(0);
+                      c.Description = objDR.GetString(1);
+                      c.UserId = objDR.GetInt32(2);
 
-                                items.Add(c);
-                            }
-                            objDR.Close();
-                        }
-                    }
+                      items.Add(c);
+                  }
                 }
-                connection.Close();
 
                 return  items.ToArray(); ;
             }
@@ -70,23 +62,14 @@ namespace WebApi_Menu_Practica.Data
                 connection.Open();
                 using (var objDR = objCmd.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    if (objDR.HasRows)
-                    {
-                        while (objDR.Read())
-                        {
-                            items = new CategoryModel();
-                            while (objDR.Read())
-                            {
-                                items.CategoryId= objDR.GetInt32(0);
-                                items.Description = objDR.GetString(1);
-                                items.UserId = objDR.GetInt32(2);
-                               
-                            }
-                            objDR.Close();
-                        }
-                    }
+                  items = new CategoryModel();
+                  while (objDR.Read())
+                  {
+                      items.CategoryId= objDR.GetInt32(0);
+                      items.Description = objDR.GetString(1);
+                      items.UserId = objDR.GetInt32(2);
+                  }
                 }
-                connection.Close();
             }
             return items;
 
@@ -118,7 +101,6 @@ namespace WebApi_Menu_Practica.Data
 
                 connection.Open();
                 var result=objCmd.ExecuteNonQuery();
-                connection.Close();
 
                 return result;
     
@@ -142,7 +124,6 @@ namespace WebApi_Menu_Practica.Data
 
                 connection.Open();
                 var result = objCmd.ExecuteNonQuery();
-                connection.Close();
 
                 return result;
 

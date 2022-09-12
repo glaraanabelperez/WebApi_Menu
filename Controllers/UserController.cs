@@ -80,7 +80,7 @@ namespace WebApi_Menu_Practica.Controllers
         [HttpDelete]
         public IHttpActionResult Delete(int userId)
         {
-            var userItem = Data.User.Delete(catguserIdeoria);
+            var userItem = Data.User.Delete(userId);
             if (userItem != 0)
             {
                 return NotFound();

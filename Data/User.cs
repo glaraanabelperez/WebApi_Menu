@@ -28,29 +28,23 @@ namespace WebApi_Menu_Practica.Data
                 connection.Open();
                 using (var objDR = command.ExecuteReader())
                 {
-                    if (objDR.HasRows)
+                    while (objDR.Read())
                     {
-                        while (objDR.Read())
-                        {                         
-                            while (objDR.Read())
-                                list.Add(new UserModel()
-                                {
-                                    Business_Name = objDR.GetString(1),
-                                    Direction = objDR.GetString(2),
-                                    Ig = objDR.GetString(3),
-                                    Logo = objDR.GetString(4),
-                                    OrdersWhatsapp = objDR.GetBoolean(5),
-                                    Password = objDR.GetString(6),
-                                    Phone = objDR.GetInt32(7),
-                                    Slogan = objDR.GetString(8),
-                                    user_email = objDR.GetString(9),
-                                    User_id = objDR.GetInt32(10)
-                                });                                                     
-                        }
-                    }
-                    objDR.Close();                 
+                        list.Add(new UserModel()
+                        {
+                            Business_Name = objDR.GetString(1),
+                            Direction = objDR.GetString(2),
+                            Ig = objDR.GetString(3),
+                            Logo = objDR.GetString(4),
+                            OrdersWhatsapp = objDR.GetBoolean(5),
+                            Password = objDR.GetString(6),
+                            Phone = objDR.GetInt32(7),
+                            Slogan = objDR.GetString(8),
+                            user_email = objDR.GetString(9),
+                            User_id = objDR.GetInt32(10)
+                        });
+                    }                                                                         
                 }
-                connection.Close();
             }
             return list.ToArray();
         }
@@ -65,33 +59,27 @@ namespace WebApi_Menu_Practica.Data
             var items = new UserModel();
             using (var connection = new SqlConnection(connectionString))
                 {
-                    var command = new SqlCommand("User_Get", connection);              
-                    connection.Open();
-                    using (var objDR = command.ExecuteReader(CommandBehavior.SingleRow))
-                    {
-                        if (objDR.HasRows)
-                        {
-                            while (objDR.Read())
-                            {
-                                items = new UserModel();
-                                while (objDR.Read())
-                                {
-                                    items.Business_Name = objDR.GetString(1);
-                                    items.Direction = objDR.GetString(2);
-                                    items.Ig = objDR.GetString(3);
-                                    items.Logo = objDR.GetString(4);
-                                    items.OrdersWhatsapp = objDR.GetBoolean(5);
-                                    items.Password = objDR.GetString(6);
-                                    items.Phone = objDR.GetInt32(7);
-                                    items.Slogan = objDR.GetString(8);
-                                    items.user_email = objDR.GetString(9);
-                                    items.User_id = objDR.GetInt32(10);
-                                }
-                                objDR.Close();
-                            }
-                        }
-                    }
-                connection.Close();
+                   var command = new SqlCommand("User_Get", connection);              
+                   connection.Open();
+                   using (var objDR = command.ExecuteReader(CommandBehavior.SingleRow))
+                   {
+
+                       items = new UserModel();
+                       while (objDR.Read())
+                       {
+                           items.Business_Name = objDR.GetString(1);
+                           items.Direction = objDR.GetString(2);
+                           items.Ig = objDR.GetString(3);
+                           items.Logo = objDR.GetString(4);
+                           items.OrdersWhatsapp = objDR.GetBoolean(5);
+                           items.Password = objDR.GetString(6);
+                           items.Phone = objDR.GetInt32(7);
+                           items.Slogan = objDR.GetString(8);
+                           items.user_email = objDR.GetString(9);
+                           items.User_id = objDR.GetInt32(10);
+                       }
+                             
+                   }
             }
             return items;
 
@@ -131,7 +119,6 @@ namespace WebApi_Menu_Practica.Data
  
                 connection.Open();
                 var result=objCmd.ExecuteNonQuery();
-                connection.Close();
 
                 return result;
  
@@ -156,7 +143,6 @@ namespace WebApi_Menu_Practica.Data
 
                 connection.Open();
                 var result = objCmd.ExecuteNonQuery();
-                connection.Close();
 
                 return result;
 
