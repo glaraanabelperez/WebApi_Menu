@@ -23,26 +23,32 @@ namespace WebApi_Menu_Practica.Data
             var items = new List<CategoryModel>();
             using (var connection = new SqlConnection(connectionString))
             {
-                var objCmd = new SqlCommand("Category_ListByUser", connection);
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-                //connection.Open();
-                using (var objDR = objCmd.ExecuteReader())
+                using(var objCmd = new SqlCommand("Category_ListByUser", connection))
                 {
-                  var c = new CategoryModel();
-                  while (objDR.Read())
-                  {
-                      c.CategoryId = objDR.GetInt32(0);
-                      c.Description = objDR.GetString(1);
-                      c.UserId = objDR.GetInt32(2);
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    //connection.Open();
+                    using (var objDR = objCmd.ExecuteReader())
+                    {
+                        var c = new CategoryModel();
+                        if (!objDR.Read())
+                        {
+                            return null;
+                        }
+                        while (objDR.Read())
+                        {
+                            c.CategoryId = objDR.GetInt32(0);
+                            c.Description = objDR.GetString(1);
+                            c.UserId = objDR.GetInt32(2);
 
-                      items.Add(c);
-                  }
+                            items.Add(c);
+                        }
+                        return items.ToArray(); 
+                    }
+
                 }
-
-                return  items.ToArray(); ;
+                
             }
-
         
         }
 
@@ -56,23 +62,29 @@ namespace WebApi_Menu_Practica.Data
             var items = new CategoryModel();
             using (var connection = new SqlConnection(connectionString))
             {
-                var objCmd = new SqlCommand("Category_Get", connection);
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-                connection.Open();
-                using (var objDR = objCmd.ExecuteReader(CommandBehavior.SingleRow))
+                using (var objCmd = new SqlCommand("Category_Get", connection))
                 {
-                  items = new CategoryModel();
-                  while (objDR.Read())
-                  {
-                      items.CategoryId= objDR.GetInt32(0);
-                      items.Description = objDR.GetString(1);
-                      items.UserId = objDR.GetInt32(2);
-                  }
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    connection.Open();
+                    using (var objDR = objCmd.ExecuteReader(CommandBehavior.SingleRow))
+                    {
+                        items = new CategoryModel();
+                        if (!objDR.Read())
+                        {
+                            return null;
+                        }
+                        while (objDR.Read())
+                        {
+                            items.CategoryId = objDR.GetInt32(0);
+                            items.Description = objDR.GetString(1);
+                            items.UserId = objDR.GetInt32(2);
+                        }
+                    }
                 }
+                return items;
             }
-            return items;
-
+                    
         }
 
         /// <summary>
@@ -86,24 +98,30 @@ namespace WebApi_Menu_Practica.Data
             {
 
                 SqlCommand objCmd;
-
+                var store = "";
                 if (categoryId.HasValue && categoryId != 0)
                 {
+                    store = "Category_Update";
                     objCmd = new SqlCommand("Category_Update", connection);
-                    objCmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
+                    
                 }
                 else
-                    objCmd = new SqlCommand("Category_Add", connection);
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.Add("@UserId", SqlDbType.Date).Value = data.UserId;
-                objCmd.Parameters.Add("@CategoryId", SqlDbType.Date).Value = data.CategoryId;
-                objCmd.Parameters.Add("@Description", SqlDbType.Char, 5).Value = data.Description;
+                    store = "Category_Add";
+                using (objCmd = new SqlCommand(store, connection))
+                {
+                    if(store.Equals("Category_Update"))
+                        objCmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
 
-                connection.Open();
-                var result=objCmd.ExecuteNonQuery();
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    objCmd.Parameters.Add("@UserId", SqlDbType.Date).Value = data.UserId;
+                    objCmd.Parameters.Add("@Description", SqlDbType.Char, 5).Value = data.Description;
 
-                return result;
-    
+                    connection.Open();
+                    var result = objCmd.ExecuteNonQuery();
+
+                    return result;
+                }
+                   
             }
            
         }
@@ -118,14 +136,16 @@ namespace WebApi_Menu_Practica.Data
             {
 
                 SqlCommand objCmd;
-                objCmd = new SqlCommand("Category_Delete", connection);
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
+                using (objCmd = new SqlCommand("Category_Delete", connection))
+                {
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    objCmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
 
-                connection.Open();
-                var result = objCmd.ExecuteNonQuery();
+                    connection.Open();
+                    var result = objCmd.ExecuteNonQuery();
 
-                return result;
+                    return result;
+                }
 
             }
 

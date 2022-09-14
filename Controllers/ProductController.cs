@@ -24,11 +24,15 @@ namespace WebApi_Menu_Practica.Controllers
             {
                 //List<ProductModel> orderDToList;
                 ProductModel orderDToList = Data.Product.Get(productId);
+                if (orderDToList == null)
+                {
+                    return Content(HttpStatusCode.NotFound, "La solicitud no arroja resultados");
+                }
                 return Ok(orderDToList);
             }
             catch (Exception ex)
             {
-                return Content(HttpStatusCode.NotFound, ex.Message);
+                return Content(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -71,12 +75,13 @@ namespace WebApi_Menu_Practica.Controllers
         [HttpPut]
         public IHttpActionResult Update(int productId, [FromBody] ProductModel data)
         {
-            var userItem = Data.Product.Save(productId, data);
-            if (userItem != -1)
-            {
-                return NotFound();
-            }
-            return Ok();
+  
+           var prod = Data.Product.Save(productId, data);
+           if (prod == -2)
+               return Content(HttpStatusCode.BadRequest, "Los datos solicitados no existen");
+
+           return Ok();
+
         }
 
         /// <summary>
@@ -86,13 +91,17 @@ namespace WebApi_Menu_Practica.Controllers
         [Route("api/Product/delete/{productId}")]
         [HttpDelete]
         public IHttpActionResult Delete(int productId) {
-            var userItem = Data.Product.Delete(productId);
-            if (userItem != -1)
-            {
-                return NotFound();
-             }
-            return Ok();
-        }
+
+                var prod = Data.Product.Delete(productId);
+
+                if (prod == -2)
+                    return Content(HttpStatusCode.BadRequest, "Los datos solicitados no existen");
+
+                return Ok();
+
+         }
+
+
            
   }    
 }

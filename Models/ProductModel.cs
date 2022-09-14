@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -16,21 +17,25 @@ namespace WebApi_Menu_Practica.Models
         /// <summary>
         /// Identificador Categoria
         /// </summary>
+        [Required]
         public int CategoryId { get; set; }
 
         /// <summary>
         /// Identificador usuario al cual pertenece
         /// </summary>
+        [Required]
         public int UserId { get; set; }
 
         /// <summary>
         /// Estado
         /// </summary>
+        [Required]
         public bool State { get; set; }
 
         /// <summary>
         /// Titulo
         /// </summary>
+        [Required]
         public string Title { get; set; }
 
         /// <summary>
@@ -56,11 +61,13 @@ namespace WebApi_Menu_Practica.Models
         /// <summary>
         /// Precio
         /// </summary>
+        [Required]
         public double Price { get; set; }
 
         /// <summary>
         /// Destacado
         /// </summary>
+        [Required]
         public bool Featured { get; set; }
 
         /// <summary>

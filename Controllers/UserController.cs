@@ -20,37 +20,31 @@ namespace WebApi_Menu_Practica.Controllers
         [HttpGet]
         public IHttpActionResult GetAll()
         {
-            try
+            var result = user.List();
+            if (result == null)
             {
-                var orderDToList = user.List();
-                if (orderDToList == null)
-                {
-                    return NotFound();
-                }
-                return Ok(orderDToList);
+                return Content(HttpStatusCode.NotFound, "La solicitud no arroja resultados");
             }
-            catch (Exception e)
-            {
-                return BadRequest("No hubo respuesta en el servidor");
-            }
-           
+            return Ok(result);
 
         }
 
         /// <summary>
-        /// Devuelve los datos de un turno
+        /// Devuelve los datos de un usuario
         /// </summary>
-        /// <param name="cityId">Identificador del turno</param>
-        /// <returns>Datos del turno</returns>
+        /// <param name="userId">Identificador del usuario</param>
+        /// <returns>Datos del usuario</returns>
+        [Route("api/User/{userId}")]
         [HttpGet]
         public IHttpActionResult Get(int userId)
         {
-            var userItem = user.Get(userId);
-            if (userItem == null)
-            {
-                return NotFound();
-            }
-            return Ok(userItem);
+                var result = user.Get(userId);
+                if (result == null)
+                {
+                    return Content(HttpStatusCode.NotFound, "La solicitud no arroja resultados");
+                }
+                return Ok(result);
+            
         }
 
         /// <summary>
@@ -58,41 +52,50 @@ namespace WebApi_Menu_Practica.Controllers
         /// </summary>
         /// <param name="data">Datos del usuario</param>
         /// <returns><c>true</c> Si se guardaron los datos</returns>
-        [HttpPut]
-        public IHttpActionResult Put([FromBody] UserModel data) 
+        [Route("api/User/insert")]
+        [HttpPost]
+        public IHttpActionResult Insert([FromBody] UserInsertModel data) 
         {
-            var userItem = user.Save(null,data);
-            if (userItem != 0)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return Content(HttpStatusCode.BadRequest, "Los datos no son validos");
             }
+            var result = user.Insert(data);
+            if (result == -2)
+                return Content(HttpStatusCode.BadRequest, "Los datos solicitados no existen");
             return Ok();
         }
 
-        [HttpPost]
+        [Route("api/User/update/{userId}")]
+        [HttpPut]
         public IHttpActionResult Update(int userId, [FromBody] UserModel data)
         {
-            var userItem = user.Save(userId, data);
-            if (userItem != 0)
-            {
-                return NotFound();
-            }
-            return Ok();
-        }
+           
+          var result = user.Update(userId, data);
+          if (result == -2)
+              return Content(HttpStatusCode.BadRequest, "Los datos solicitados no existen");
+
+          return Ok();
+
+    }
 
         /// <summary>
         /// Elimina un user
         /// </summary>
         /// <param name="userId"> Identificador del user</param>
+        [Route("api/User/delete/{userId}")]
         [HttpDelete]
         public IHttpActionResult Delete(int userId)
         {
-            var userItem = Data.User.Delete(userId);
-            if (userItem != 0)
-            {
-                return NotFound();
-            }
-            return Ok();
+
+           var result = Data.User.Delete(userId);
+
+               if (result == -2)
+                   return Content(HttpStatusCode.BadRequest, "Los datos solicitados no existen");
+
+               return Ok();
+
+            
         }
 
 

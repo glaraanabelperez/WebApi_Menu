@@ -18,43 +18,51 @@ namespace WebApi_Menu_Practica.Data
         /// Devuelve todos los usuarios sin paginar
         /// </summary>
         /// <returns>Lista de usuarios</returns>
-        internal UserModel[] List()
+        internal List<UserModel> List()
         {
             string queryString = "SELECT *  FROM dbo.Users;";
             List<UserModel> list = new List<UserModel>();
             using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                SqlDataReader objDR = command.ExecuteReader(CommandBehavior.CloseConnection);
-                try{
-                    while (objDR.Read())
+                using (var command = new SqlCommand(queryString, connection))
+                {
+                    connection.Open();
+                    using (SqlDataReader objDR = command.ExecuteReader(CommandBehavior.CloseConnection))
                     {
-                        list.Add(new UserModel()
+                        if (!objDR.Read())
                         {
-                            User_id = objDR.GetInt32(0),
-                            Business_Name = objDR.GetString(1),
-                            Slogan = objDR.GetString(2),
-                            user_email = objDR.GetString(3),
-                            Password = objDR.GetString(4),
-                            Phone = objDR.GetInt32(5),
-                            Direction = objDR.GetString(6),
-                            Ig = objDR.GetString(7),
-                            Facebook = objDR.GetString(8),
-                            Logo = objDR.GetString(9),
-                            OrdersWhatsapp = (objDR.GetByte(10) == 0 ? false : true),
-                        });
+                            return null;
+                        }
+                        else
+                        {
+                            while (objDR.Read())
+                            {
+                                list.Add(new UserModel()
+                                {
+                                    User_id = objDR.GetInt32(0),
+                                    Business_Name = DBNull.Value.Equals(objDR.GetValue(1)) ? null : (objDR.GetString(1)),
+                                    Slogan = DBNull.Value.Equals(objDR.GetValue(2)) ? null : (objDR.GetString(2)),
+                                    user_email = DBNull.Value.Equals(objDR.GetValue(3)) ? null : (objDR.GetString(3)),
+                                    Password = DBNull.Value.Equals(objDR.GetValue(4)) ? null : (objDR.GetString(4)),
+                                    Phone = DBNull.Value.Equals(objDR.GetValue(5)) ? 0 : (objDR.GetInt32(5)),
+                                    Direction = DBNull.Value.Equals(objDR.GetValue(6)) ? null : (objDR.GetString(6)),
+                                    Ig = DBNull.Value.Equals(objDR.GetValue(7)) ? null : (objDR.GetString(7)),
+                                    Facebook = DBNull.Value.Equals(objDR.GetValue(8)) ? null : (objDR.GetString(8)),
+                                    Logo = DBNull.Value.Equals(objDR.GetValue(9)) ? null : (objDR.GetString(9)),
+                                    OrdersWhatsapp = (objDR.GetByte(10) == 0 ? false : true),
+                                });
+                            }
+
+                            return list;
+                        }
+
                     }
 
-                    return list.ToArray();
+
+
                 }
-                catch (Exception e)
-                {
-                    throw e;
-                }
-                                                                                      
             }
-            
+                 
         }
 
         /// <summary>
@@ -66,30 +74,38 @@ namespace WebApi_Menu_Practica.Data
         {
             var items = new UserModel();
             using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand("User_Get", connection))
                 {
-                   var command = new SqlCommand("User_Get", connection);              
-                   connection.Open();
-                   using (var objDR = command.ExecuteReader(CommandBehavior.SingleRow))
-                   {
+                    command.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
 
-                       items = new UserModel();
-                       while (objDR.Read())
-                       {
-                           items.Business_Name = objDR.GetString(1);
-                           items.Direction = objDR.GetString(2);
-                           items.Ig = objDR.GetString(3);
-                           items.Logo = objDR.GetString(4);
-                           items.OrdersWhatsapp = objDR.GetBoolean(5);
-                           items.Password = objDR.GetString(6);
-                           items.Phone = objDR.GetInt32(7);
-                           items.Slogan = objDR.GetString(8);
-                           items.user_email = objDR.GetString(9);
-                           items.User_id = objDR.GetInt32(10);
-                       }
-                             
-                   }
+                    using (var objDR = command.ExecuteReader(CommandBehavior.SingleRow))
+                    {
+                        
+                        if (!objDR.Read())
+                        {
+                            return null;
+                        }
+                        var item = new UserModel();
+                        item.User_id = objDR.GetInt32(0);
+                        item.Business_Name = DBNull.Value.Equals(objDR.GetValue(1)) ? null : (objDR.GetString(1));
+                        item.Slogan = DBNull.Value.Equals(objDR.GetValue(2)) ? null : (objDR.GetString(2));
+                        item.user_email = DBNull.Value.Equals(objDR.GetValue(3)) ? null : (objDR.GetString(3));
+                        item.Password = DBNull.Value.Equals(objDR.GetValue(4)) ? null : (objDR.GetString(4));
+                        item.Phone = DBNull.Value.Equals(objDR.GetValue(5)) ? 0 : (objDR.GetInt32(5));
+                        item.Direction = DBNull.Value.Equals(objDR.GetValue(6)) ? null : (objDR.GetString(6));
+                        item.Ig = DBNull.Value.Equals(objDR.GetValue(7)) ? null : (objDR.GetString(7));
+                        item.Facebook = DBNull.Value.Equals(objDR.GetValue(8)) ? null : (objDR.GetString(8));
+                        item.Logo = DBNull.Value.Equals(objDR.GetValue(9)) ? null : (objDR.GetString(9));
+                        item.OrdersWhatsapp = objDR.GetByte(10) == 0 ? false : true;
+
+                        return item;
+                    }
+                        
+                }
             }
-            return items;
 
         }
 
@@ -97,43 +113,78 @@ namespace WebApi_Menu_Practica.Data
         /// Graba el usuario
         /// </summary>
         /// <param name="data">Datos del usuario</param>
-        /// <param name="userId">Identificador del usuario administrador que graba</param>
+        /// <param name="userId">Identificador del usuario</param>
         /// <returns><c>true</c> Si se guardaron los datos</returns>
-        internal  int Save(int?userId, UserModel data)
+        internal  int Update(int userId, UserModel data)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand objCmd = new SqlCommand("User_Update", connection))
+                {
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+
+                    if (data.Business_Name != null)
+                        objCmd.Parameters.Add("@Business_Name", SqlDbType.VarChar).Value = data.Business_Name;
+                    if (data.Direction != null)
+                        objCmd.Parameters.Add("@Direction", SqlDbType.VarChar).Value = data.Direction;
+                    if (data.Facebook != null)
+                        objCmd.Parameters.Add("@Facebook", SqlDbType.NVarChar, 250).Value = data.Facebook;
+                    if (data.Ig != null)
+                        objCmd.Parameters.Add("@Ig", SqlDbType.NVarChar, 250).Value = data.Ig;
+                    if (data.Logo != null)
+                        objCmd.Parameters.Add("@Logo", SqlDbType.NVarChar, 25).Value = data.Logo;
+                    if (data.OrdersWhatsapp.ToString().Length > 0)
+                        objCmd.Parameters.Add("@OrdersWhatsapp", SqlDbType.TinyInt).Value = data.OrdersWhatsapp;
+                    if (data.Password != null)
+                        objCmd.Parameters.Add("@Password", SqlDbType.NVarChar, 250).Value = data.Password;
+                    if (data.Phone.ToString().Length > 0)
+                        objCmd.Parameters.Add("@Phone", SqlDbType.Int).Value = data.Phone;
+                    if (data.Slogan != null)
+                        objCmd.Parameters.Add("@Slogan", SqlDbType.NVarChar, 250).Value = data.Slogan;
+                    if (data.user_email != null)
+                        objCmd.Parameters.Add("@User_email", SqlDbType.NVarChar, 250).Value = data.user_email;
+
+
+                    connection.Open();
+                    
+
+                    var result = objCmd.ExecuteNonQuery();
+  
+                     return result;
+                }
+            } 
+ 
+        }
+
+        /// <summary>
+        /// Graba el usuario
+        /// </summary>
+        /// <param name="data">Datos del usuario</param>
+        /// <param name="userId">Identificador del usuario</param>
+        /// <returns><c>true</c> Si se guardaron los datos</returns>
+        internal int Insert(UserInsertModel data)
         {
             using (var connection = new SqlConnection(connectionString))
             {
 
-                SqlCommand objCmd;
-
-                if (userId.HasValue && userId.Value != 0)
+                using (SqlCommand objCmd = new SqlCommand("User_Add", connection))
                 {
-                    objCmd = new SqlCommand("User_Update", connection);
-                    objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    if (data.Business_Name != null)
+                        objCmd.Parameters.Add("@Business_Name", SqlDbType.VarChar).Value = data.Business_Name;
+                    objCmd.Parameters.Add("@User_email", SqlDbType.NVarChar, 250).Value = data.user_email;
+                    objCmd.Parameters.Add("@Password", SqlDbType.VarChar, 250).Value = data.Password;
+
+
+                    connection.Open();
+                    var result = objCmd.ExecuteNonQuery();
+
+                    return result;
                 }
-                else
-                    objCmd = new SqlCommand("User_Add", connection);
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.Add("@Direction", SqlDbType.VarChar).Value = data.Direction;
-                objCmd.Parameters.Add("@Facebook", SqlDbType.NVarChar, 250).Value = data.Facebook;
-                objCmd.Parameters.Add("@Ig", SqlDbType.NVarChar, 250).Value = data.Ig;
-                objCmd.Parameters.Add("@Logo", SqlDbType.NVarChar, 25).Value = data.Logo;
-                objCmd.Parameters.Add("@OrdersWhatsapp", SqlDbType.TinyInt).Value = data.OrdersWhatsapp;
-                objCmd.Parameters.Add("@Password", SqlDbType.NVarChar, 250).Value = data.Password;
-                objCmd.Parameters.Add("@Phone", SqlDbType.Int).Value = data.Phone;
-                objCmd.Parameters.Add("@Slogan", SqlDbType.NVarChar, 250).Value = data.Slogan;
-                objCmd.Parameters.Add("@User_email", SqlDbType.NVarChar, 250).Value = data.user_email;
-
- 
-                connection.Open();
-                var result=objCmd.ExecuteNonQuery();
-
-                return result;
- 
+                   
             }
 
- 
-            
         }
 
         /// <summary>
@@ -144,16 +195,15 @@ namespace WebApi_Menu_Practica.Data
         {
             using (var connection = new SqlConnection(connectionString))
             {
+               using(SqlCommand objCmd = new SqlCommand("User_Delete", connection))
+                    {
+                        objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                        connection.Open();
+                        var result = objCmd.ExecuteNonQuery();
 
-                SqlCommand objCmd;
-                objCmd = new SqlCommand("User_Delete", connection);
-                objCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-
-                connection.Open();
-                var result = objCmd.ExecuteNonQuery();
-
-                return result;
-
+                        return result;
+                    }
+                    
             }
 
         }

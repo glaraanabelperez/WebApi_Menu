@@ -6,27 +6,27 @@ using System.Web;
 
 namespace WebApi_Menu_Practica.Models
 {
-    public class CategoryModel
+    public class UserInsertModel
     {
         /// <summary>
-        /// Identificador producto
+        /// Identificador Nombre negocio
         /// </summary>
         [Required]
-        public int UserId { get; set; }
-
+        public string Business_Name { get; set; }
 
         /// <summary>
-        /// Identificador Categoria
+        /// email
         /// </summary>
         [Required]
-        public int? CategoryId { get; set; }
-
+        public string  user_email { get; set; }
 
         /// <summary>
-        /// Descripcion
+        /// contraseña del usuario
         /// </summary>
         [Required]
-        public string Description { get; set; }
+        public string Password { get; set; }
+
+      
 
     }
 }
