@@ -46,6 +46,7 @@ namespace WebApi_Menu_Practica.Controllers
         //[Authorize(Roles = "Admin")]
         public DataTableModel List([FromBody] QueryDataModel<Data.Product.Filter, Data.Product.OrderFields> queryData)
         {
+            //try catch
             var objList = Data.Product.List(queryData.OrderField, queryData.OrderAsc, queryData.Filter, queryData.From, queryData.Length, out int RecordCount);
             return (new DataTableModel()
             {

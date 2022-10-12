@@ -48,6 +48,24 @@ namespace WebApi_Menu_Practica.Controllers
         }
 
         /// <summary>
+        /// Devuelve los datos de un usuario
+        /// </summary>
+        /// <param name="userId">Identificador del usuario</param>
+        /// <returns>Datos del usuario</returns>
+        [Route("api/User/login")]
+        [HttpPost]
+        public IHttpActionResult Login([FromBody] LoginModel data)
+        {
+            var result = user.Login(data);
+            if (result == null)
+            {
+                return Content(HttpStatusCode.NotFound, "La solicitud no arroja resultados");
+            }
+            return Ok(result);
+
+        }
+
+        /// <summary>
         /// Graba los datos del usuario
         /// </summary>
         /// <param name="data">Datos del usuario</param>

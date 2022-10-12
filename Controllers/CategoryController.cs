@@ -15,8 +15,9 @@ namespace WebApi_Menu_Practica.Controllers
         public Product product = new Product();
 
         /// <summary>
-        /// Listado de todos los productos 
+        /// Listado de todas las categorias segun usuario
         /// </summary>
+        [Route("api/category/list/{userId}")]
         [HttpGet]
         public IHttpActionResult GetAll(int userId)
         {

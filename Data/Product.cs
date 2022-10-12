@@ -73,8 +73,9 @@ namespace WebApi_Menu_Practica.Data
         #region Sql
 
         private const string SELECT_ALL =
-        ";SELECT A.ProductId, A.CreatedOn,A.[Title], A.[Description], A.Featured as Featured, A.CategoryId_FK as CategoryId, A.UserId_FK as UserId , " +
-            " A.NameImage, A.Price as Price ,A.Promotion" +
+        ";SELECT A.ProductId, A.CreatedOn,A.[Title], A.[Subtitle], A.[Description], " +
+            " A.Featured as Featured, A.CategoryId_FK as CategoryId, A.UserId_FK as UserId , " +
+            " A.NameImage, A.Price as Price ,A.Promotion, A.State" +
             ", U.Business_Name as Buisness, o.[Description] as CategoryName " +
             " FROM Products AS A "+
             " INNER JOIN dbo.[Users] U ON U.UserId = A.UserId_FK " +
@@ -123,7 +124,7 @@ namespace WebApi_Menu_Practica.Data
                         if (filter.CategoryId.HasValue)
                         {
                             strFilter += " AND [A].CategoryId_FK=@Id_Category";
-                            objSqlCmd.Parameters.Add("@Id_Categorie", SqlDbType.Int).Value = filter.CategoryId.Value;
+                            objSqlCmd.Parameters.Add("@Id_Category", SqlDbType.Int).Value = filter.CategoryId.Value;
 
                         }
                         if (filter.UserId.HasValue)

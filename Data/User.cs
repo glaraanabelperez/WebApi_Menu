@@ -65,6 +65,38 @@ namespace WebApi_Menu_Practica.Data
                  
         }
 
+        internal LoginModel Login(LoginModel data)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand("Login", connection))
+                {
+                    command.Parameters.Add("@Email", SqlDbType.NVarChar).Value = data.email;
+                    command.Parameters.Add("@Password", SqlDbType.VarChar).Value = data.Password;
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+
+                    using (var objDR = command.ExecuteReader(CommandBehavior.SingleRow))
+                    {
+
+                        if (!objDR.Read())
+                        {
+                            return null;
+                        }
+                        var item = new LoginModel();
+                        item.UserId = objDR.GetInt32(0);
+                        item.BusinessName = DBNull.Value.Equals(objDR.GetValue(1)) ? null : (objDR.GetString(1));                   
+                        item.email = DBNull.Value.Equals(objDR.GetValue(2)) ? null : (objDR.GetString(2));
+                        item.Password = DBNull.Value.Equals(objDR.GetValue(3)) ? null : (objDR.GetString(3));
+                      
+                        return item;
+                    }
+
+                }
+            }
+        }
+
         /// <summary>
         /// Devuelve los datos de un usuario
         /// </summary>
