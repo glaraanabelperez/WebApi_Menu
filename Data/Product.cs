@@ -26,9 +26,9 @@ namespace WebApi_Menu_Practica.Data
             /// </summary>
             Price = 0,
             /// <summary>
-            /// Destacado
+            /// Nombre del producto
             /// </summary>
-            Featured = 1
+            Title=1
 
         }
 
@@ -49,11 +49,6 @@ namespace WebApi_Menu_Practica.Data
             /// Búsqueda por comercio
             /// </summary>
             public int? UserId { get; set; }
-
-            /// <summary>
-            /// Búsqueda por texto libre
-            /// </summary>
-            public string FreeText { get ; set; }
 
             /// <summary>
             /// Búsqueda por texto libre
@@ -98,8 +93,7 @@ namespace WebApi_Menu_Practica.Data
         /// <param name="filter">Filtros a utilizar</param>
         /// <param name="recordCount">Cantidad de registros encontrados con los filtros establecidos</param>
         /// <returns>Registros obtenidos con los filtros y orden seleccionados</returns>
-        public static DataTable List(OrderFields? orderField, bool? orderAscendant, Filter filter, int? from, int? length, out int recordCount)
-        {
+        public static DataTable List(OrderFields? orderField, bool? orderAscendant, Filter filter, int? from, int? length, out int recordCount){
 
             if (from.HasValue != length.HasValue)
                 throw new ArgumentOutOfRangeException(nameof(from));
@@ -111,7 +105,7 @@ namespace WebApi_Menu_Practica.Data
             if (orderField.HasValue)
                 strOrderField = orderField.ToString();
             else
-                strOrderField = OrderFields.Featured.ToString();
+                strOrderField = OrderFields.Title.ToString();
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -142,11 +136,11 @@ namespace WebApi_Menu_Practica.Data
                             strFilter += " AND [A].Featured = @Featured";
                             objSqlCmd.Parameters.Add("@Featured", SqlDbType.Bit).Value = filter.Featured.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(filter.FreeText))
-                        {
-                            strFilter += " AND CONTAINS(R.*, @FreeText )";
-                            objSqlCmd.Parameters.Add("@FreeText", SqlDbType.NVarChar, 1000).Value = filter.FreeText;
-                        }
+                        //if (!string.IsNullOrWhiteSpace(filter.FreeText))
+                        //{
+                        //    strFilter += " AND CONTAINS(R.*, @FreeText )";
+                        //    objSqlCmd.Parameters.Add("@FreeText", SqlDbType.NVarChar, 1000).Value = filter.FreeText;
+                        //}
 
 
                         if (!string.IsNullOrWhiteSpace(strFilter))
